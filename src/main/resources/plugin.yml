@@ -1,0 +1,6 @@
+name: InstaSlate
+version: '1.0-SNAPSHOT'
+main: me.ikno.instaSlate.InstaSlate
+api-version: '1.21'
+authors: [ Ikno_ ]
+description: Makes netherite pickaxes more effective against deepslate, allowing for insta-mining with haste 2 and efficiency 5.
