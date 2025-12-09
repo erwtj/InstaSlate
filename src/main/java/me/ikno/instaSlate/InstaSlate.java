@@ -1,6 +1,6 @@
 package me.ikno.instaSlate;
 
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -14,7 +14,17 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.components.ToolComponent;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public final class InstaSlate extends JavaPlugin implements Listener {
+    private Set<Material> _otherMaterials;
+
+    @Override
+    public void onLoad() {
+        _otherMaterials = new HashSet<>(Tag.MINEABLE_PICKAXE.getValues());
+        _otherMaterials.remove(Material.DEEPSLATE);
+    }
 
     @Override
     public void onEnable() {
@@ -27,17 +37,19 @@ public final class InstaSlate extends JavaPlugin implements Listener {
     @SuppressWarnings("UnstableApiUsage")
     void applyInstaSlate(ItemStack i, Player p) {
         if (i == null) return;
-        if (i.getType() != Material.NETHERITE_PICKAXE) return;
+        if (i.getType() != Material.NETHERITE_PICKAXE) return; // TODO: Add diamond pickaxe toggle to config
 
         ItemMeta m = i.getItemMeta();
         if (!i.hasItemMeta() || m == null) {
             m = getServer().getItemFactory().getItemMeta(Material.NETHERITE_PICKAXE);
+            p.sendMessage("Created new item meta");
         }
 
         @SuppressWarnings("ConstantConditions")
         ToolComponent tool = m.getTool(); // Can't be null so ignore warning
 
-        tool.addRule(Material.DEEPSLATE, 31f, true);
+        tool.addRule(_otherMaterials, 9f, true); // ToolComponent does not come with default rules
+        tool.addRule(Material.DEEPSLATE, 31f, true); // TODO: Add config option for insta-mine speed
 
         // Not sure if meta is passed by ref
         m.setTool(tool);
@@ -76,6 +88,6 @@ public final class InstaSlate extends JavaPlugin implements Listener {
 
         ItemStack i = e.getItem().getItemStack();
         applyInstaSlate(i, p);
-        e.getItem().setItemStack(i);
+        e.getItem().setItemStack(i); // Not sure if needed
     }
 }
