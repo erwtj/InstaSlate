@@ -1,6 +1,7 @@
 package me.ikno.instaSlate;
 
 import org.bukkit.*;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -18,7 +19,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 public final class InstaSlate extends JavaPlugin implements Listener {
+    FileConfiguration _config = getConfig();
     private Set<Material> _otherMaterials;
+
+    float _deepslateMineSpeed;
+    boolean _overwriteToolComponent;
 
     @Override
     public void onLoad() {
@@ -29,6 +34,14 @@ public final class InstaSlate extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         getServer().getPluginManager().registerEvents(this, this);
+
+        _config.addDefault("deepslate-mine-speed", 45.0);
+        _config.addDefault("overwrite-toolcomponent", false);
+        _config.options().copyDefaults(true);
+        saveConfig();
+
+        _deepslateMineSpeed = (float) _config.getDouble("deepslate-mine-speed");
+        _overwriteToolComponent = _config.getBoolean("overwrite-toolcomponent");
     }
 
     @Override
@@ -48,8 +61,12 @@ public final class InstaSlate extends JavaPlugin implements Listener {
         @SuppressWarnings("ConstantConditions")
         ToolComponent tool = m.getTool(); // Can't be null so ignore warning
 
+        if (!tool.getRules().isEmpty() && _overwriteToolComponent) {
+            tool = getServer().getItemFactory().getItemMeta(Material.NETHERITE_PICKAXE).getTool(); // Reset tool rules
+        }
+
         tool.addRule(_otherMaterials, 9f, true); // ToolComponent does not come with default rules
-        tool.addRule(Material.DEEPSLATE, 31f, true); // TODO: Add config option for insta-mine speed
+        tool.addRule(Material.DEEPSLATE, _deepslateMineSpeed, true);
 
         // Not sure if meta is passed by ref
         m.setTool(tool);
