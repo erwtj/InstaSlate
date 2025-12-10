@@ -55,7 +55,6 @@ public final class InstaSlate extends JavaPlugin implements Listener {
         ItemMeta m = i.getItemMeta();
         if (!i.hasItemMeta() || m == null) {
             m = getServer().getItemFactory().getItemMeta(Material.NETHERITE_PICKAXE);
-            p.sendMessage("Created new item meta");
         }
 
         @SuppressWarnings("ConstantConditions")
@@ -65,6 +64,7 @@ public final class InstaSlate extends JavaPlugin implements Listener {
             tool = getServer().getItemFactory().getItemMeta(Material.NETHERITE_PICKAXE).getTool(); // Reset tool rules
         }
 
+        tool.setDamagePerBlock(1);
         tool.addRule(_otherMaterials, 9f, true); // ToolComponent does not come with default rules
         tool.addRule(Material.DEEPSLATE, _deepslateMineSpeed, true);
 
